@@ -1,7 +1,8 @@
 const express = require("express");
 
 const app = express();
-
+app.use(express.json());
+app.use("/tickets", require("./routes/ticketRoutes"));
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
