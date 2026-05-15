@@ -2,8 +2,8 @@ const express = require("express");
 
 const app = express();
 app.use(express.json());
-app.use("/tickets", require("./routes/ticketRoutes"));
-app.use("/signin", require("./routes/signin"));
+app.use("/tickets", require("./server/routes/ticketRoutes"));
+app.use("/signin", require("./server/routes/signin"));
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
