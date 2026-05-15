@@ -1,17 +1,27 @@
 const express = require("express");
-
 const router = express.Router();
+//get all tickets for a user
+router.get("/", async (req, res) => {
+  // In a real application, you would fetch tickets from the database
+  const tickets = [
+    {
+      id: 1,
+      title: "Issue with login",
+      description: "I can't log in to my account",
+      status: "open"
+    },
+    {
+      id: 2,
+      title: "Error on dashboard",
+      description: "The dashboard shows an error message",
+      status: "closed"
+    }
+  ];
+  res.json(tickets);
 
-router.get("/", (req, res) => {
-  const ticketId = Math.floor(Math.random() * 1000000);
-  const userId = req.params.userId;
-
-  res.json({
-    ticketId
-  });
 });
 
-router.post("/createticket", (req, res) => {
+router.post("/createticket", async(req, res) => {
   const { title, description } = req.body;
 
   // Validation
