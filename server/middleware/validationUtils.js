@@ -40,9 +40,21 @@ const validateUpdateStatus = (ticketID, statusChange) => {
   return { isValid: true };
 };
 
+const validateTicketID = (ticketID) => {
+  if (!ticketID || typeof ticketID !== "number") {
+    return {
+      isValid: false,
+      message: "Ticket ID is required"
+    };
+  }
+  return { isValid: true };
+};
+
+
 module.exports = {
   validateCreateTicket,
   validateCloseTicket,
   validateAssignTicket,
-  validateUpdateStatus
+  validateUpdateStatus,
+  validateTicketID
 };

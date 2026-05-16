@@ -7,7 +7,7 @@ const tickets = [
       openDate: "2024-06-01T10:00:00Z",
       closeDate: null,
       openedBy: "user1",
-      assignedTo: "agent1",
+      assignedTo: 1,
       closedBy: null
     },
     {
@@ -18,8 +18,8 @@ const tickets = [
       openDate: "2024-06-01T10:00:00Z",
       closeDate: "2024-06-01T11:00:00Z",
       openedBy: "user2",
-      assignedTo: "agent2",
-      closedBy: "agent2"
+      assignedTo: 2,
+      closedBy: 2
     }
   ];
 module.exports = tickets;
