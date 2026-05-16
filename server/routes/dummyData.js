@@ -1,25 +1,561 @@
 const tickets = [
-    {
-      id: 1,
-      title: "Issue with login",
-      description: "I can't log in to my account",
-      status: "open",
-      openDate: "2024-06-01T10:00:00Z",
-      closeDate: null,
-      openedBy: "user1",
-      assignedTo: 1,
-      closedBy: null
-    },
-    {
-      id: 2,
-      title: "Error on dashboard",
-      description: "The dashboard shows an error message",
-      status: "closed",
-      openDate: "2024-06-01T10:00:00Z",
-      closeDate: "2024-06-01T11:00:00Z",
-      openedBy: "user2",
-      assignedTo: 2,
-      closedBy: 2
-    }
-  ];
+  {
+    id: 1,
+    title: "Issue with login",
+    description: "I can't log in to my account",
+    status: "open",
+    openDate: "2024-06-01T10:00:00Z",
+    closeDate: null,
+    openedBy: "user1",
+    assignedTo: 1,
+    closedBy: null
+  },
+  {
+    id: 2,
+    title: "Error on dashboard",
+    description: "The dashboard shows an error message",
+    status: "closed",
+    openDate: "2024-06-01T10:00:00Z",
+    closeDate: "2024-06-01T11:00:00Z",
+    openedBy: "user2",
+    assignedTo: 2,
+    closedBy: 2
+  },
+  {
+    id: 3,
+    title: "Password reset issue",
+    description: "Password reset email not received",
+    status: "open",
+    openDate: "2024-06-02T09:00:00Z",
+    closeDate: null,
+    openedBy: "user3",
+    assignedTo: 1,
+    closedBy: null
+  },
+  {
+    id: 4,
+    title: "Slow website performance",
+    description: "Pages are taking too long to load",
+    status: "in progress",
+    openDate: "2024-06-02T10:15:00Z",
+    closeDate: null,
+    openedBy: "user4",
+    assignedTo: 3,
+    closedBy: null
+  },
+  {
+    id: 5,
+    title: "Unable to upload files",
+    description: "File upload fails with error 500",
+    status: "closed",
+    openDate: "2024-06-02T11:00:00Z",
+    closeDate: "2024-06-02T12:30:00Z",
+    openedBy: "user5",
+    assignedTo: 2,
+    closedBy: 2
+  },
+  {
+    id: 6,
+    title: "Profile picture not updating",
+    description: "Changes to profile picture do not save",
+    status: "open",
+    openDate: "2024-06-03T08:00:00Z",
+    closeDate: null,
+    openedBy: "user6",
+    assignedTo: 4,
+    closedBy: null
+  },
+  {
+    id: 7,
+    title: "Notification emails delayed",
+    description: "Emails arrive hours late",
+    status: "in progress",
+    openDate: "2024-06-03T09:45:00Z",
+    closeDate: null,
+    openedBy: "user7",
+    assignedTo: 3,
+    closedBy: null
+  },
+  {
+    id: 8,
+    title: "Search function broken",
+    description: "Search returns no results",
+    status: "closed",
+    openDate: "2024-06-03T11:20:00Z",
+    closeDate: "2024-06-03T13:00:00Z",
+    openedBy: "user8",
+    assignedTo: 5,
+    closedBy: 5
+  },
+  {
+    id: 9,
+    title: "App crashes on startup",
+    description: "Mobile app crashes immediately",
+    status: "open",
+    openDate: "2024-06-04T07:50:00Z",
+    closeDate: null,
+    openedBy: "user9",
+    assignedTo: 1,
+    closedBy: null
+  },
+  {
+    id: 10,
+    title: "Billing page error",
+    description: "Unable to process payment",
+    status: "closed",
+    openDate: "2024-06-04T10:00:00Z",
+    closeDate: "2024-06-04T11:15:00Z",
+    openedBy: "user10",
+    assignedTo: 4,
+    closedBy: 4
+  },
+
+  // 11 - 20
+  {
+    id: 11,
+    title: "Two-factor authentication issue",
+    description: "2FA code is invalid",
+    status: "open",
+    openDate: "2024-06-05T08:30:00Z",
+    closeDate: null,
+    openedBy: "user11",
+    assignedTo: 2,
+    closedBy: null
+  },
+  {
+    id: 12,
+    title: "Broken navigation links",
+    description: "Navbar links redirect incorrectly",
+    status: "in progress",
+    openDate: "2024-06-05T09:10:00Z",
+    closeDate: null,
+    openedBy: "user12",
+    assignedTo: 3,
+    closedBy: null
+  },
+  {
+    id: 13,
+    title: "Session timeout too short",
+    description: "Users are logged out too quickly",
+    status: "closed",
+    openDate: "2024-06-05T11:00:00Z",
+    closeDate: "2024-06-05T12:00:00Z",
+    openedBy: "user13",
+    assignedTo: 5,
+    closedBy: 5
+  },
+  {
+    id: 14,
+    title: "Data export not working",
+    description: "CSV export downloads empty file",
+    status: "open",
+    openDate: "2024-06-06T08:45:00Z",
+    closeDate: null,
+    openedBy: "user14",
+    assignedTo: 4,
+    closedBy: null
+  },
+  {
+    id: 15,
+    title: "Incorrect user permissions",
+    description: "Regular users can access admin page",
+    status: "in progress",
+    openDate: "2024-06-06T09:30:00Z",
+    closeDate: null,
+    openedBy: "user15",
+    assignedTo: 1,
+    closedBy: null
+  },
+  {
+    id: 16,
+    title: "Chat support offline",
+    description: "Live chat widget unavailable",
+    status: "closed",
+    openDate: "2024-06-06T10:10:00Z",
+    closeDate: "2024-06-06T11:40:00Z",
+    openedBy: "user16",
+    assignedTo: 2,
+    closedBy: 2
+  },
+  {
+    id: 17,
+    title: "Mobile layout broken",
+    description: "UI overlaps on small screens",
+    status: "open",
+    openDate: "2024-06-07T08:20:00Z",
+    closeDate: null,
+    openedBy: "user17",
+    assignedTo: 3,
+    closedBy: null
+  },
+  {
+    id: 18,
+    title: "Dark mode flickering",
+    description: "Theme switches unexpectedly",
+    status: "closed",
+    openDate: "2024-06-07T09:40:00Z",
+    closeDate: "2024-06-07T10:30:00Z",
+    openedBy: "user18",
+    assignedTo: 5,
+    closedBy: 5
+  },
+  {
+    id: 19,
+    title: "API authentication failed",
+    description: "401 returned for valid token",
+    status: "open",
+    openDate: "2024-06-07T11:10:00Z",
+    closeDate: null,
+    openedBy: "user19",
+    assignedTo: 4,
+    closedBy: null
+  },
+  {
+    id: 20,
+    title: "Calendar sync issue",
+    description: "Events are not syncing properly",
+    status: "in progress",
+    openDate: "2024-06-08T08:00:00Z",
+    closeDate: null,
+    openedBy: "user20",
+    assignedTo: 1,
+    closedBy: null
+  },
+
+  // 21 - 30
+  {
+    id: 21,
+    title: "Unable to delete account",
+    description: "Delete account button not working",
+    status: "open",
+    openDate: "2024-06-08T09:00:00Z",
+    closeDate: null,
+    openedBy: "user21",
+    assignedTo: 2,
+    closedBy: null
+  },
+  {
+    id: 22,
+    title: "Image gallery not loading",
+    description: "Images display as broken links",
+    status: "closed",
+    openDate: "2024-06-08T10:00:00Z",
+    closeDate: "2024-06-08T11:20:00Z",
+    openedBy: "user22",
+    assignedTo: 3,
+    closedBy: 3
+  },
+  {
+    id: 23,
+    title: "Payment confirmation missing",
+    description: "No receipt email sent",
+    status: "in progress",
+    openDate: "2024-06-09T08:45:00Z",
+    closeDate: null,
+    openedBy: "user23",
+    assignedTo: 4,
+    closedBy: null
+  },
+  {
+    id: 24,
+    title: "Form validation error",
+    description: "Required fields can be skipped",
+    status: "open",
+    openDate: "2024-06-09T09:30:00Z",
+    closeDate: null,
+    openedBy: "user24",
+    assignedTo: 5,
+    closedBy: null
+  },
+  {
+    id: 25,
+    title: "Cannot update settings",
+    description: "Save settings button unresponsive",
+    status: "closed",
+    openDate: "2024-06-09T10:15:00Z",
+    closeDate: "2024-06-09T11:00:00Z",
+    openedBy: "user25",
+    assignedTo: 1,
+    closedBy: 1
+  },
+  {
+    id: 26,
+    title: "Video playback issue",
+    description: "Videos buffer continuously",
+    status: "open",
+    openDate: "2024-06-10T08:00:00Z",
+    closeDate: null,
+    openedBy: "user26",
+    assignedTo: 2,
+    closedBy: null
+  },
+  {
+    id: 27,
+    title: "Broken password rules",
+    description: "Weak passwords accepted",
+    status: "in progress",
+    openDate: "2024-06-10T09:10:00Z",
+    closeDate: null,
+    openedBy: "user27",
+    assignedTo: 3,
+    closedBy: null
+  },
+  {
+    id: 28,
+    title: "Language translation missing",
+    description: "Spanish translations not appearing",
+    status: "closed",
+    openDate: "2024-06-10T10:20:00Z",
+    closeDate: "2024-06-10T11:10:00Z",
+    openedBy: "user28",
+    assignedTo: 4,
+    closedBy: 4
+  },
+  {
+    id: 29,
+    title: "Push notifications disabled",
+    description: "Users not receiving alerts",
+    status: "open",
+    openDate: "2024-06-11T08:35:00Z",
+    closeDate: null,
+    openedBy: "user29",
+    assignedTo: 5,
+    closedBy: null
+  },
+  {
+    id: 30,
+    title: "Duplicate account creation",
+    description: "System allows duplicate emails",
+    status: "closed",
+    openDate: "2024-06-11T09:45:00Z",
+    closeDate: "2024-06-11T10:30:00Z",
+    openedBy: "user30",
+    assignedTo: 1,
+    closedBy: 1
+  },
+
+  // 31 - 40
+  {
+    id: 31,
+    title: "Map integration failing",
+    description: "Map API returns blank screen",
+    status: "open",
+    openDate: "2024-06-12T08:15:00Z",
+    closeDate: null,
+    openedBy: "user31",
+    assignedTo: 2,
+    closedBy: null
+  },
+  {
+    id: 32,
+    title: "Incorrect timezone display",
+    description: "Times shown in wrong timezone",
+    status: "in progress",
+    openDate: "2024-06-12T09:25:00Z",
+    closeDate: null,
+    openedBy: "user32",
+    assignedTo: 3,
+    closedBy: null
+  },
+  {
+    id: 33,
+    title: "Broken logout button",
+    description: "Users remain logged in",
+    status: "closed",
+    openDate: "2024-06-12T10:40:00Z",
+    closeDate: "2024-06-12T11:15:00Z",
+    openedBy: "user33",
+    assignedTo: 4,
+    closedBy: 4
+  },
+  {
+    id: 34,
+    title: "Attachment preview issue",
+    description: "PDF previews not loading",
+    status: "open",
+    openDate: "2024-06-13T08:50:00Z",
+    closeDate: null,
+    openedBy: "user34",
+    assignedTo: 5,
+    closedBy: null
+  },
+  {
+    id: 35,
+    title: "User role mismatch",
+    description: "Wrong dashboard displayed",
+    status: "in progress",
+    openDate: "2024-06-13T09:40:00Z",
+    closeDate: null,
+    openedBy: "user35",
+    assignedTo: 1,
+    closedBy: null
+  },
+  {
+    id: 36,
+    title: "Comment section broken",
+    description: "Comments fail to submit",
+    status: "closed",
+    openDate: "2024-06-13T10:30:00Z",
+    closeDate: "2024-06-13T11:20:00Z",
+    openedBy: "user36",
+    assignedTo: 2,
+    closedBy: 2
+  },
+  {
+    id: 37,
+    title: "Security warning popup",
+    description: "Browser shows unsafe warning",
+    status: "open",
+    openDate: "2024-06-14T08:05:00Z",
+    closeDate: null,
+    openedBy: "user37",
+    assignedTo: 3,
+    closedBy: null
+  },
+  {
+    id: 38,
+    title: "Broken image upload",
+    description: "PNG files rejected",
+    status: "closed",
+    openDate: "2024-06-14T09:15:00Z",
+    closeDate: "2024-06-14T10:05:00Z",
+    openedBy: "user38",
+    assignedTo: 4,
+    closedBy: 4
+  },
+  {
+    id: 39,
+    title: "Database timeout error",
+    description: "Queries timing out frequently",
+    status: "in progress",
+    openDate: "2024-06-14T10:25:00Z",
+    closeDate: null,
+    openedBy: "user39",
+    assignedTo: 5,
+    closedBy: null
+  },
+  {
+    id: 40,
+    title: "Search filter issue",
+    description: "Filters do not apply correctly",
+    status: "open",
+    openDate: "2024-06-15T08:45:00Z",
+    closeDate: null,
+    openedBy: "user40",
+    assignedTo: 1,
+    closedBy: null
+  },
+
+  // 41 - 50
+  {
+    id: 41,
+    title: "Unable to print reports",
+    description: "Print dialog never appears",
+    status: "closed",
+    openDate: "2024-06-15T09:10:00Z",
+    closeDate: "2024-06-15T10:20:00Z",
+    openedBy: "user41",
+    assignedTo: 2,
+    closedBy: 2
+  },
+  {
+    id: 42,
+    title: "Corrupted download files",
+    description: "Downloaded ZIP files are invalid",
+    status: "open",
+    openDate: "2024-06-15T10:40:00Z",
+    closeDate: null,
+    openedBy: "user42",
+    assignedTo: 3,
+    closedBy: null
+  },
+  {
+    id: 43,
+    title: "Live updates delayed",
+    description: "Real-time data refresh is slow",
+    status: "in progress",
+    openDate: "2024-06-16T08:30:00Z",
+    closeDate: null,
+    openedBy: "user43",
+    assignedTo: 4,
+    closedBy: null
+  },
+  {
+    id: 44,
+    title: "Duplicate notifications",
+    description: "Users receive same alert twice",
+    status: "closed",
+    openDate: "2024-06-16T09:20:00Z",
+    closeDate: "2024-06-16T10:00:00Z",
+    openedBy: "user44",
+    assignedTo: 5,
+    closedBy: 5
+  },
+  {
+    id: 45,
+    title: "Analytics page crashing",
+    description: "Charts fail to render",
+    status: "open",
+    openDate: "2024-06-16T10:50:00Z",
+    closeDate: null,
+    openedBy: "user45",
+    assignedTo: 1,
+    closedBy: null
+  },
+  {
+    id: 46,
+    title: "Broken registration flow",
+    description: "Users stuck on step 2",
+    status: "closed",
+    openDate: "2024-06-17T08:25:00Z",
+    closeDate: "2024-06-17T09:45:00Z",
+    openedBy: "user46",
+    assignedTo: 2,
+    closedBy: 2
+  },
+  {
+    id: 47,
+    title: "Email template formatting",
+    description: "Emails display incorrectly on mobile",
+    status: "in progress",
+    openDate: "2024-06-17T09:30:00Z",
+    closeDate: null,
+    openedBy: "user47",
+    assignedTo: 3,
+    closedBy: null
+  },
+  {
+    id: 48,
+    title: "Missing user avatars",
+    description: "Default avatar shown for all users",
+    status: "open",
+    openDate: "2024-06-17T10:15:00Z",
+    closeDate: null,
+    openedBy: "user48",
+    assignedTo: 4,
+    closedBy: null
+  },
+  {
+    id: 49,
+    title: "Export button disabled",
+    description: "Button remains greyed out",
+    status: "closed",
+    openDate: "2024-06-18T08:40:00Z",
+    closeDate: "2024-06-18T09:30:00Z",
+    openedBy: "user49",
+    assignedTo: 5,
+    closedBy: 5
+  },
+  {
+    id: 50,
+    title: "User profile save failure",
+    description: "Changes are not persisted",
+    status: "open",
+    openDate: "2024-06-18T10:00:00Z",
+    closeDate: null,
+    openedBy: "user50",
+    assignedTo: 1,
+    closedBy: null
+  }
+];
 module.exports = tickets;

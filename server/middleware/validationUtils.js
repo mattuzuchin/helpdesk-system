@@ -50,11 +50,18 @@ const validateTicketID = (ticketID) => {
   return { isValid: true };
 };
 
+const validateFilterStatus = (status) => {
+  if (!status || typeof status !== "string" || !["open", "closed", "claimed"].includes(status.toLowerCase())) {
+    return { isValid: false, message: "Status filter must be 'open', 'closed', or 'claimed'" };
+  }  
+  return { isValid: true };
+};
 
 module.exports = {
   validateCreateTicket,
   validateCloseTicket,
   validateAssignTicket,
   validateUpdateStatus,
-  validateTicketID
+  validateTicketID,
+  validateFilterStatus
 };
