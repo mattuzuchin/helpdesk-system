@@ -558,4 +558,3 @@ const tickets = [
     closedBy: null
   }
 ];
-module.exports = tickets;

@@ -10,15 +10,6 @@ const validateCreateTicket = (title, description) => {
   return { isValid: true };
 };
 
-const validateCloseTicket = (ticketID) => {
-  if (!ticketID || typeof ticketID !== "number") {
-    return {
-      isValid: false,
-      message: "Ticket ID is required"
-    };
-  }
-  return { isValid: true };
-};
 
 const validateAssignTicket = (ticketID, agentID) => {
   if (!ticketID || !agentID || typeof ticketID !== "number" || typeof agentID !== "number") {
@@ -40,7 +31,7 @@ const validateUpdateStatus = (ticketID, statusChange) => {
   return { isValid: true };
 };
 
-const validateTicketID = (ticketID) => {
+const validateID = (ticketID) => {
   if (!ticketID || typeof ticketID !== "number") {
     return {
       isValid: false,
@@ -59,9 +50,8 @@ const validateFilterStatus = (status) => {
 
 module.exports = {
   validateCreateTicket,
-  validateCloseTicket,
   validateAssignTicket,
   validateUpdateStatus,
-  validateTicketID,
+  validateID,
   validateFilterStatus
 };
