@@ -1,7 +1,7 @@
 // all controller code (the logic of endpoints)
 const {PrismaClient} = require("@prisma/client");
 const prisma = new PrismaClient();
-const validation = require("../middleware/validationUtils.js");
+const validation = require("../utils/validationUtils.js");
 
 const getAllTickets = async (req, res) => {
     try {

@@ -48,10 +48,19 @@ const validateFilterStatus = (status) => {
   return { isValid: true };
 };
 
+const validateEmail = (email) => {
+    return email
+        .toLowerCase()
+        .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+};
+
 module.exports = {
   validateCreateTicket,
   validateAssignTicket,
   validateUpdateStatus,
   validateID,
-  validateFilterStatus
+  validateFilterStatus,
+  validateEmail
 };
