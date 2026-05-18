@@ -5,6 +5,31 @@ const validation = require("../utils/validationUtils.js");
 
 const prisma = new PrismaClient();
 
+const logOutUser = async (req, res) => {
+    const userId = req.user.id;
+    try {
+        await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                tokenVersion: {
+                    increment: 1
+                }
+            }
+        });
+        return res.status(200).json({
+            message: "Logout successful"
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "Error logging out"
+        });
+    }
+};
+
+
 const registerUser = async (req, res) => {
 
     const { name, email, password } = req.body;
@@ -18,6 +43,11 @@ const registerUser = async (req, res) => {
     if(!validation.validateEmail(email)) {
         return res.status(400).json({
             message: "Invalid email format"
+        });
+    }
+    if(!validation.isValidPassword(password)) {
+        return res.status(400).json({
+            message: "Password must be 15 characters in length, have a special character, and have digits such that they add up to 20."
         });
     }
     try {
@@ -38,7 +68,8 @@ const registerUser = async (req, res) => {
             data: {
                 name: name,
                 email: email,
-                password: hashedPassword
+                password: hashedPassword,
+                role: "user" // default role is user
             }
         });
         // gnerate JWT
@@ -111,5 +142,6 @@ const loginUser = async (req, res) => {
 };
 module.exports = {
     loginUser,
-    registerUser
+    registerUser,
+    logOutUser
 };

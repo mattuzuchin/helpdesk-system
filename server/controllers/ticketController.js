@@ -3,6 +3,7 @@ const {PrismaClient} = require("@prisma/client");
 const prisma = new PrismaClient();
 const validation = require("../utils/validationUtils.js");
 
+// display all tickets - only for staff and managers since users should only se thier own tickets
 const getAllTickets = async (req, res) => {
     try {
         const tickets = await prisma.ticket.findMany();
@@ -17,7 +18,9 @@ const getAllTickets = async (req, res) => {
 };
 
 const createTicket = async (req, res) => {
-  const { title, description, name } = req.body;
+  const { title, description} = req.body;
+
+  const userInfo = req.user;
   // Validation
   const validationResult = validation.validateCreateTicket(title, description);
   if (!validationResult.isValid) {
@@ -28,12 +31,18 @@ const createTicket = async (req, res) => {
   try {
     const newTicket = await prisma.ticket.create({
       data: {
-        title: title,
-        description: description,
+        title,
+        description,
         status: "open",
-        openDate: new Date().toISOString(),
-        closeDate: null,
-        assignedTo: null
+        openDate: new Date(),
+        createdBy: {
+          connect: {
+            id: req.user.id
+          }
+        }
+      },
+      include: {
+        createdBy: true
       }
     });
     return res.status(201).json({
@@ -50,7 +59,7 @@ const createTicket = async (req, res) => {
 };
 
 const closeTicket = async (req, res) => {
-  const ticketID = parseInt(req.params.id);
+  const ticketID = req.params.id;
 
   const validationResult = validation.validateID(ticketID);
   if (!validationResult.isValid) {
@@ -88,9 +97,57 @@ const closeTicket = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+const reAssignTicket = async (req, res) => {
+  const ticketID = req.params.ticketID;
+  const { agentID } = req.body;
+
+  const validationResult = validation.validateAssignTicket(ticketID, agentID);
+  if (!validationResult.isValid) {
+    return res.status(400).json({ message: validationResult.message });
+  }
+  try {
+    const ticket = await prisma.ticket.findUnique({
+      where: { id: ticketID }
+    });
+    if(ticket.assignedToId === agentID) {
+        return res.status(400).json({ message: "Ticket is already assigned to this agent" });
+    }
+    const updated = await prisma.ticket.update({
+      where: { id: ticketID },
+      data: {
+        status: "claimed",
+        assignedTo: {
+          connect: {
+            id: agentID
+          }
+        }
+      },
+      include: {
+        assignedTo: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+
+    res.status(200).json({
+      message: "Ticket reassigned successfully",
+      ticketID: updated.id,
+      assignedTo: updated.assignedTo,
+      status: updated.status
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 const assignTicket = async (req, res) => {
-  const ticketID = parseInt(req.params.ticketID);
+  const ticketID = req.params.ticketID;
   const { agentID } = req.body;
 
   const validationResult = validation.validateAssignTicket(ticketID, agentID);
@@ -110,8 +167,21 @@ const assignTicket = async (req, res) => {
     const updated = await prisma.ticket.update({
       where: { id: ticketID },
       data: {
-        assignedTo: agentID,
-        status: "claimed"
+        status: "claimed",
+        assignedTo: {
+          connect: {
+            id: agentID
+          }
+        }
+      },
+      include: {
+        assignedTo: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
       }
     });
 
@@ -129,7 +199,7 @@ const assignTicket = async (req, res) => {
 };
 
 const getAllTicketsByAgent = async (req, res) => {
-  const agentID = parseInt(req.query.agentID);
+  const agentID = req.query.agentID;
 
   const validationResult = validation.validateID(agentID);
   if (!validationResult.isValid) {
@@ -149,7 +219,7 @@ const getAllTicketsByAgent = async (req, res) => {
   }
 };
 const getAllTicketsByStatus = async (req, res) => {
-  const agentID = parseInt(req.query.agentID);
+  const agentID = req.query.agentID;
   const status = req.query.status;
 
   const idValidation = validation.validateID(agentID);
@@ -227,7 +297,7 @@ const getOldTickets = async (req, res) => {
 // };
 
 const getTicketTitle = async (req, res) => {
-  const ticketID = parseInt(req.query.ticketID);
+  const ticketID = req.query.ticketID;
 
   const validationResult = validation.validateID(ticketID);
   if (!validationResult.isValid) {
@@ -273,45 +343,48 @@ const filterTicketsByStatus = async (req, res) => {
 };
 
 const addCommentToTicket = async (req, res) => {
-  const ticketID = parseInt(req.params.id);
-  const { comment } = req.body;
-
-  const validationResult = validation.validateID(ticketID);
-  if (!validationResult.isValid) {
-    return res.status(400).json({ message: validationResult.message });
-  }
-
+  const ticketID = req.params.id;
+  const { content, imageUrl } = req.body;
   try {
     const ticket = await prisma.ticket.findUnique({
       where: { id: ticketID }
     });
-
     if (!ticket) {
-      return res.status(404).json({ message: "Ticket not found" });
+      return res.status(404).json({
+        message: "Ticket not found"
+      });
     }
-
-    const updated = await prisma.ticket.update({
-      where: { id: ticketID },
+    const newComment = await prisma.comment.create({
       data: {
-        comments: {
-          push: comment
+        content: content,
+        imageUrl: imageUrl || null,
+        ticket: {
+          connect: {
+            id: ticketID
+          }
+        },
+        user: {
+          connect: {
+            id: req.user.id
+          }
         }
       }
     });
-
-    res.status(200).json({
+    return res.status(201).json({
       message: "Comment added successfully",
-      ticket: updated
+      comment: newComment
     });
-
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({
+      message: "Server error"
+    });
+
   }
 };
 
 const deleteTicketViaID = async (req, res) => {
-  const ticketID = parseInt(req.params.id);
+  const ticketID = req.params.id;
   const validationResult = validation.validateID(ticketID);
   if (!validationResult.isValid) {
     return res.status(400).json({ message: validationResult.message });
@@ -343,6 +416,7 @@ module.exports = {
     getTicketTitle,
     filterTicketsByStatus,
     addCommentToTicket,
-    deleteTicketViaID
+    deleteTicketViaID,
+    reAssignTicket
     //updateStatus
 };

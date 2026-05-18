@@ -13,22 +13,38 @@ datasource db {
 }
 
 model Ticket {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid())
   title       String
   description String
   status      String
-  createdBy   String?
-  comments    String[]
-  openDate    DateTime @default(now())
-  closeDate   DateTime?
-  assignedTo  Int?
+  openDate    DateTime?  
+  closeDate   DateTime? 
+  createdById String?
+  createdBy   User?    @relation("CreatedTickets", fields: [createdById], references: [id])
+  assignedToId String?
+  assignedTo   User?   @relation("AssignedTickets", fields: [assignedToId], references: [id])
+  comments    Comment[]
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   name      String
   email     String   @unique
   password  String
   role      String   @default("user")
   createdAt DateTime @default(now())
+  comments  Comment[]
+  createdTickets  Ticket[] @relation("CreatedTickets")
+  assignedTickets Ticket[] @relation("AssignedTickets")
+  tokenVersion Int @default(0)
+}
+model Comment {
+  id         String   @id @default(uuid())
+  content    String
+  imageUrl   String?
+  createdAt  DateTime @default(now())
+  ticketId   String
+  ticket     Ticket   @relation(fields: [ticketId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
 }

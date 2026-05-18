@@ -1,27 +1,22 @@
 const {PrismaClient} = require("@prisma/client");
 const prisma = new PrismaClient();
 const validation = require("../utils/validationUtils.js");
-
 //only admins or the users themselves can delete an account
 const deleteUserViaID = async (req, res) => {
-    const targetUserId = parseInt(req.params.id);
-    const requester = req.user; // we get this from authmiddle which gives us jwt payload
-    const isSelf = requester.id === targetUserId;
-    const isAdmin = requester.role === "admin";
-
-    //this allows users to delete their own account and admins to delete any account
-    if (!isSelf || !isAdmin) {
-        return res.status(403).json({
-            message: "You are not allowed to delete this user"
-        });
-    }
+    const targetUserId = req.params.id;
+    const userBeingDeleted = await prisma.user.findUnique({ where: { id: targetUserId } });
     try {
+        if(userBeingDeleted === null) {
+            return res.status(404).json({
+                message: "User not found - please try again"
+            });
+        }
         await prisma.user.delete({
             where: { id: targetUserId }
         });
-
         return res.status(200).json({
-            message: "User deleted successfully"
+            message: "User deleted successfully",
+            userDeleted: userBeingDeleted.name
         });
 
     } catch (error) {
@@ -30,6 +25,45 @@ const deleteUserViaID = async (req, res) => {
         });
     }
 };
+
+//only admins can change user permission
+const changeUserRole = async (req, res) => {
+    const targetUserId = req.params.id;
+    const { newRole } = req.body;
+    const requester = req.user;
+    const isAdmin = requester.role === "admin";
+
+    if (!isAdmin) {
+        return res.status(403).json({
+            message: "Only admins can change user roles"
+        });
+    }
+    if (!validation.validateRole(newRole)) {
+        return res.status(400).json({
+            message: "Invalid role. Valid roles are: user, staff, admin"
+        });
+    }
+    try {
+        const updatedUser = await prisma.user.update({
+            where: { id: targetUserId },
+            data: { role: newRole }
+        });
+        return res.status(200).json({
+            message: "User role updated successfully",
+            user: {
+                id: updatedUser.id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                role: updatedUser.role
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error updating user role"
+        });
+    }
+};
 module.exports = {
-  deleteUserViaID
+  deleteUserViaID,
+  changeUserRole
 };
