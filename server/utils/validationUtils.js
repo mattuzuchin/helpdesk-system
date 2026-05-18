@@ -84,6 +84,10 @@ const validateRole = (role) => {
     return ["user", "staff", "admin"].includes(role.toLowerCase());
 };
 
+const validateStatus = (status) => {
+    return ["online", "away", "busy", "offline"].includes(status.toLowerCase());
+};
+
 module.exports = {
   validateCreateTicket,
   validateAssignTicket,
@@ -92,5 +96,6 @@ module.exports = {
   validateFilterStatus,
   validateEmail,
   validateRole,
-  isValidPassword
+  isValidPassword,
+  validateStatus
 };

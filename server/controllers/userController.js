@@ -1,6 +1,40 @@
 const {PrismaClient} = require("@prisma/client");
 const prisma = new PrismaClient();
 const validation = require("../utils/validationUtils.js");
+
+const changeUserStatus = async (req, res) => {
+    const targetUserId = req.params.id;
+    const { status } = req.body;
+    if(!validation.validateStatus(status)) {
+        return res.status(400).json({
+            message: "Invalid status. Must be online, offline, away, or busy"
+        });        
+    }
+    try {
+        const userBeingChanged= await prisma.user.findUnique({ where: { id: targetUserId } });
+        if(!userBeingChanged) {
+            return res.status(404).json({
+                message: "User not found - please try again"
+            });
+        }
+        const updatedUser = await prisma.user.update({
+            where: { id: targetUserId },
+            data: { status }
+        });
+        return res.status(200).json({
+            message: "Users status successfully changed",
+            userChanged: updatedUser.status
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error changing",
+            error: error.message
+        });
+    }
+};
+
+
 //only admins or the users themselves can delete an account
 const deleteUserViaID = async (req, res) => {
     const targetUserId = req.params.id;
@@ -65,5 +99,6 @@ const changeUserRole = async (req, res) => {
 };
 module.exports = {
   deleteUserViaID,
-  changeUserRole
+  changeUserRole,
+  changeUserStatus
 };

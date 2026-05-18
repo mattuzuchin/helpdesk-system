@@ -4,11 +4,15 @@ const routeMiddleware = require("../middleware/routeMiddleware");
 const authorized = require("../middleware/authorizeUser.js")
 const {
   deleteUserViaID,
-  changeUserRole
+  changeUserRole,
+  changeUserStatus
 } = require("../controllers/userController");
+const authorizeRoles = require("../middleware/authorizeUser.js");
 
 router.delete("/delete/:id", routeMiddleware, authorized("admin", "staff","user"),deleteUserViaID);
 
 router.patch("/:id/changerole", routeMiddleware, authorized("admin"),changeUserRole);
+
+router.patch("/:id/changeuserstatus", routeMiddleware, authorizeRoles("admin", "staff", "user"),changeUserStatus)
 
 module.exports = router;
