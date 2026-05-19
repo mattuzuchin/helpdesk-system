@@ -14,7 +14,8 @@ const {
   filterTicketsByStatus,
   addCommentToTicket,
   deleteTicketViaID,
-  reAssignTicket
+  reAssignTicket,
+  getAllTicketsToID
   //updateStatus
 } = require("../controllers/ticketController");
 
@@ -53,7 +54,7 @@ router.get("/filter", routeMiddleware, authorized("admin", "staff"), filterTicke
 
 //add a comment to a specific ticket - this means via frontend when a user clicks on the ticket, the details will be there along with an option to add a comment
 router.post("/:id/comments", routeMiddleware, authorized("admin", "staff", "user"), addCommentToTicket);
-
+router.get("/:userID",routeMiddleware, authorized("admin","staff", "user"),getAllTicketsToID);
 
 //delete a ticket via id
 router.delete("/delete/:id", routeMiddleware, authorized("admin", "staff"), deleteTicketViaID);

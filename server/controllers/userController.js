@@ -97,8 +97,26 @@ const changeUserRole = async (req, res) => {
         });
     }
 };
+
+const getUserName = async (req, res) => {
+    const targetUserId = req.params.id;
+    try {
+        const getName = await prisma.user.findMany({
+            where: { id: targetUserId }
+        });
+
+        return res.status(200).json({
+           name: getName[0].name
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error getting name via ID"
+        });
+    }
+};
 module.exports = {
   deleteUserViaID,
   changeUserRole,
-  changeUserStatus
+  changeUserStatus,
+  getUserName
 };

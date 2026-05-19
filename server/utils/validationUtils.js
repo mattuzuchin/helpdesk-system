@@ -55,8 +55,8 @@ const validateUpdateStatus = (ticketID, statusChange) => {
   return { isValid: true };
 };
 
-const validateID = (ticketID) => {
-  if (!ticketID || typeof ticketID !== "string") {
+const validateID = (ID) => {
+  if (!ID || typeof ID !== "string") {
     return {
       isValid: false,
       message: "Ticket ID is required"

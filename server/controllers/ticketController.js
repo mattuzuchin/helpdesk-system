@@ -16,6 +16,42 @@ const getAllTickets = async (req, res) => {
         });
     }
 };
+const getAllTicketsToID = async (req, res) => {
+  const userID = req.params.userID;
+  const validationResult = validation.validateID(userID);
+  if (!validationResult.isValid) {
+    return res.status(400).json({ message: validationResult.message });
+  }
+  try {
+    const loggedInUser = req.user;
+    if(loggedInUser.role === "user" && loggedInUser.id !== userID) {
+      return res.status(400).json({
+        message: "Not able to show tickets for other users since you do not have permissions"
+      })
+    }
+    const tickets = await prisma.ticket.findMany({
+        where: { 
+          OR: [
+          {createdById: userID},
+          {assignedToId: userID}
+        ]
+        }
+    }
+    );
+    if(tickets == null) {
+          res.status(404).json({
+         msg: "No tickets found for the user"
+    });
+    }
+    res.status(200).json({
+         tickets
+    });
+  } catch (error) {
+    res.status(500).json({
+        message: "Error fetching tickets"
+      });
+  }
+};
 
 const createTicket = async (req, res) => {
   const { title, description} = req.body;
@@ -417,6 +453,7 @@ module.exports = {
     filterTicketsByStatus,
     addCommentToTicket,
     deleteTicketViaID,
-    reAssignTicket
+    reAssignTicket,
+    getAllTicketsToID
     //updateStatus
 };

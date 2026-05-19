@@ -5,7 +5,8 @@ const authorized = require("../middleware/authorizeUser.js")
 const {
   deleteUserViaID,
   changeUserRole,
-  changeUserStatus
+  changeUserStatus,
+  getUserName
 } = require("../controllers/userController");
 const authorizeRoles = require("../middleware/authorizeUser.js");
 
@@ -14,5 +15,7 @@ router.delete("/delete/:id", routeMiddleware, authorized("admin", "staff","user"
 router.patch("/:id/changerole", routeMiddleware, authorized("admin"),changeUserRole);
 
 router.patch("/:id/changeuserstatus", routeMiddleware, authorizeRoles("admin", "staff", "user"),changeUserStatus)
+
+router.get("/:id/getName", routeMiddleware, authorizeRoles("admin", "staff", "user"), getUserName)
 
 module.exports = router;
