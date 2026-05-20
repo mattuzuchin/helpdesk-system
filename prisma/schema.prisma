@@ -36,6 +36,8 @@ model User {
   role      String   @default("user")
   status    String   @default("online")
   createdAt DateTime @default(now())
+  resetToken        String?
+  resetTokenExpiry  DateTime?
   comments  Comment[]
   createdTickets  Ticket[] @relation("CreatedTickets")
   assignedTickets Ticket[] @relation("AssignedTickets")

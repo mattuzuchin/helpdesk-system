@@ -1,10 +1,9 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../utils/prisma.js");
 const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/jwt");
 const validation = require("../utils/validationUtils.js");
-
-const prisma = new PrismaClient();
-
+const crypto = require("crypto");
+const { sendPasswordResetEmail } = require("../utils/email.js");
 const logOutUser = async (req, res) => {
     const userId = req.user.id;
     try {
@@ -28,6 +27,131 @@ const logOutUser = async (req, res) => {
         });
     }
 };
+
+const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+    }
+
+    try {
+        const user = await prisma.user.findUnique({ where: { email } });
+
+        if (!user) {
+            return res.status(200).json({ message: "If that email exists, a reset link has been sent" });
+        }
+
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        const resetTokenExpiry = new Date(Date.now() + 15 * 15 * 1000).toISOString();
+        await prisma.user.update({
+            where: { email },
+            data: {
+                resetToken,
+                resetTokenExpiry
+            }
+        });
+        const check = await prisma.user.findUnique({ where: { email } });
+        await sendPasswordResetEmail(email, resetToken);
+
+        return res.status(200).json({ message: "If that email exists, a reset link has been sent" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Error sending reset email" });
+    }
+};
+const verifyResetToken = async (req, res) => {
+    const { token } = req.body;
+    console.log("received token:", token);
+
+    try {
+        const user = await prisma.user.findFirst({
+            where: {
+                resetToken: token,
+                resetTokenExpiry: { gt: new Date().toISOString() }
+            }
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: "Invalid or expired token" });
+        }
+
+        return res.status(200).json({ message: "Token valid" });
+    } catch (error) {
+        return res.status(500).json({ message: "Error verifying token" });
+    }
+};
+const resetPassword = async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+        return res.status(400).json({ message: "Token and new password are required" });
+    }
+
+    if (!validation.isValidPassword(newPassword)) {
+        return res.status(400).json({ message: "Password does not meet requirements" });
+    }
+
+    try {
+        const user = await prisma.user.findFirst({
+            where: {
+                resetToken: token,
+                resetTokenExpiry: { gt: new Date() }
+            }
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: "Invalid or expired reset token" });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                password: hashedPassword,
+                resetToken: null,
+                resetTokenExpiry: null,
+                tokenVersion: { increment: 1 }
+            }
+        });
+
+        return res.status(200).json({ message: "Password reset successful" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Error resetting password" });
+    }
+};
+const changePassword = async (req, res) => {
+    const userId = req.user.id;
+    const {newPW} = req.body;
+    if(!newPW) {
+        return res.status(400).json({message: "New Password required"})
+    }
+
+    if(!validation.isValidPassword(newPW)) {
+        return res.status(400).json({message: "Password requirements are not met"})
+    }
+    try {
+        const hashedPW = await bcrypt.hash(newPW, 10);
+        await prisma.user.update({
+            where: {id: userId},
+            data: {
+                password: hashedPW,
+                tokenVersion: {increment: 1}
+            }
+        });
+        return res.status(200).json({
+            message: "PW changed successful"
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "Error changing PW"
+        });
+    }
+};
+
 
 
 const registerUser = async (req, res) => {
@@ -144,5 +268,9 @@ const loginUser = async (req, res) => {
 module.exports = {
     loginUser,
     registerUser,
-    logOutUser
+    logOutUser,
+    changePassword,
+    forgotPassword,
+    resetPassword,
+    verifyResetToken
 };
