@@ -23,6 +23,8 @@ model Ticket {
   createdBy   User?    @relation("CreatedTickets", fields: [createdById], references: [id])
   assignedToId String?
   assignedTo   User?   @relation("AssignedTickets", fields: [assignedToId], references: [id])
+  closedById String?
+  closedBy   User?      @relation("ClosedTickets", fields: [closedById], references: [id])
   comments    Comment[]
 }
 
@@ -37,6 +39,7 @@ model User {
   comments  Comment[]
   createdTickets  Ticket[] @relation("CreatedTickets")
   assignedTickets Ticket[] @relation("AssignedTickets")
+  closedTickets Ticket[] @relation("ClosedTickets")
   tokenVersion Int @default(0)
 }
 model Comment {

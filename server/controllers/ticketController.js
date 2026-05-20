@@ -103,29 +103,40 @@ const closeTicket = async (req, res) => {
   }
 
   try {
-    const ticket = await prisma.ticket.findUnique({
+    const tickets = await prisma.ticket.findUnique({
       where: { id: ticketID }
     });
 
-    if (!ticket || ticket.status === "closed") {
+    if (!tickets || tickets.status === "closed") {
       return res.status(404).json({
         message: "Ticket not found or already closed"
       });
     }
 
-    const updated = await prisma.ticket.update({
+    const ticket = await prisma.ticket.update({
       where: { id: ticketID },
       data: {
         status: "closed",
-        closeDate: new Date()
+        closeDate: new Date(),
+        closedBy: {
+          connect: {
+            id: req.user.id
+          }
+        }
+      },
+      include: {
+        closedBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
       }
     });
 
     res.status(200).json({
-      message: "Ticket closed successfully",
-      ticketID: updated.id,
-      status: updated.status,
-      closeDate: updated.closeDate
+      ticket
     });
 
   } catch (err) {
@@ -193,11 +204,18 @@ const assignTicket = async (req, res) => {
 
   try {
     const ticket = await prisma.ticket.findUnique({
-      where: { id: ticketID }
+      where: { id: ticketID },
     });
 
-    if (!ticket || ticket.status === "closed" || ticket.status === "claimed") {
-      return res.status(404).json({ message: "Ticket not found or already closed  or claimed- thus it cannot be assigned. " });
+    if (
+      !ticket ||
+      ticket.status === "closed" ||
+      ticket.status === "claimed"
+    ) {
+      return res.status(404).json({
+        message:
+          "Ticket not found or already closed or claimed - thus it cannot be assigned."
+      });
     }
 
     const updated = await prisma.ticket.update({
@@ -210,27 +228,19 @@ const assignTicket = async (req, res) => {
           }
         }
       },
-      include: {
-        assignedTo: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
       }
-    });
+    );
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Ticket assigned successfully",
-      ticketID: updated.id,
-      assignedTo: updated.assignedTo,
-      status: updated.status
+      ticket: updated
     });
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({
+      message: "Server error"
+    });
   }
 };
 
@@ -441,8 +451,31 @@ const deleteTicketViaID = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+
+const getTicketViaID = async (req, res) => {
+    const ticketID = req.params.id;
+    const validationResult = validation.validateID(ticketID);
+    if (!validationResult.isValid) {
+      return res.status(400).json({ message: validationResult.message });
+    } 
+    try {
+        const ticket = await prisma.ticket.findMany(
+          {
+            where: {id: ticketID},
+            include: {createdBy: true, assignedTo: true, closedBy: true}
+          }
+        );
+        return res.status(200).json({
+            ticket
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Error fetching tickets"
+        });
+    }
+};
 module.exports = {
-    getAllTickets,
+    getAllTickets, 
     createTicket,
     closeTicket,
     assignTicket,
@@ -454,6 +487,7 @@ module.exports = {
     addCommentToTicket,
     deleteTicketViaID,
     reAssignTicket,
-    getAllTicketsToID
-    //updateStatus
+    getAllTicketsToID,
+    getTicketViaID
+    //getTicketID
 };

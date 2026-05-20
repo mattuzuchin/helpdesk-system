@@ -15,7 +15,8 @@ const {
   addCommentToTicket,
   deleteTicketViaID,
   reAssignTicket,
-  getAllTicketsToID
+  getAllTicketsToID,
+  getTicketViaID
   //updateStatus
 } = require("../controllers/ticketController");
 
@@ -56,6 +57,7 @@ router.get("/filter", routeMiddleware, authorized("admin", "staff"), filterTicke
 router.post("/:id/comments", routeMiddleware, authorized("admin", "staff", "user"), addCommentToTicket);
 router.get("/:userID",routeMiddleware, authorized("admin","staff", "user"),getAllTicketsToID);
 
+router.get("/:id/getTicket", routeMiddleware, authorized("admin", "staff", "user"), getTicketViaID);
 //delete a ticket via id
 router.delete("/delete/:id", routeMiddleware, authorized("admin", "staff"), deleteTicketViaID);
 module.exports = router;
