@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendPasswordResetEmail = async (toEmail, resetToken) => {
-    const resetLink = `https://helpdesk-frontend-sjje.vercel.app//resetPassword?token=${resetToken}`;
+    const resetLink = `https://helpdesk-frontend-sjje.vercel.app/resetPassword?token=${resetToken}`;
     
     await transporter.sendMail({
         from: process.env.EMAIL_USER,
