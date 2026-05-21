@@ -13,7 +13,7 @@ app.use("/users", require("./server/routes/userRoutes"));
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
-
-app.listen(process.env.PORT, () => {
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
   console.log("Server running on port " + process.env.PORT);
 });
