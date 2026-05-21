@@ -3,7 +3,7 @@ const app = express();
 const cors = require("cors");
 app.use(express.json());
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://helpdesk-frontend-sjje.vercel.app/",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
@@ -14,6 +14,6 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
-app.listen(3000, () => {
+app.listen(process.env.PORT || 3000, () => {
   console.log("Server running on port 3000");
 });
