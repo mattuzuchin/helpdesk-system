@@ -43,7 +43,7 @@ const forgotPassword = async (req, res) => {
         }
 
         const resetToken = crypto.randomBytes(32).toString("hex");
-        const resetTokenExpiry = new Date(Date.now() + 15 * 15 * 1000).toISOString();
+        const resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000).toISOString();
         await prisma.user.update({
             where: { email },
             data: {

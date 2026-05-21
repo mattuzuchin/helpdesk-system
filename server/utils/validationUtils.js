@@ -87,7 +87,14 @@ const validateRole = (role) => {
 const validateStatus = (status) => {
     return ["online", "away", "busy", "offline"].includes(status.toLowerCase());
 };
-
+const validateLink = (link) => {
+    try {
+        new URL(url);
+        return true;
+    } catch {
+        return false;
+    }
+};
 module.exports = {
   validateCreateTicket,
   validateAssignTicket,
@@ -97,5 +104,6 @@ module.exports = {
   validateEmail,
   validateRole,
   isValidPassword,
-  validateStatus
+  validateStatus,
+  validateLink
 };

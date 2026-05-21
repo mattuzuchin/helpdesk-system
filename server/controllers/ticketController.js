@@ -392,9 +392,20 @@ const addCommentToTicket = async (req, res) => {
   const ticketID = req.params.id;
   const { content, imageUrl } = req.body;
   try {
+        
     const ticket = await prisma.ticket.findUnique({
       where: { id: ticketID }
     });
+    if(content.trim().length === 0) {
+      return res.status(404).json({
+        message: "Comment cannot be empty!"
+      });
+    }
+    if(imageUrl && !validation.validateLink(imageUrl)) {
+      return res.status(404).json({
+        message: "Link format is invalid. Please enter a valid link."
+      });
+    }
     if (!ticket) {
       return res.status(404).json({
         message: "Ticket not found"
@@ -462,8 +473,19 @@ const getTicketViaID = async (req, res) => {
         const ticket = await prisma.ticket.findMany(
           {
             where: {id: ticketID},
-            include: {createdBy: true, assignedTo: true, closedBy: true}
+            include: {createdBy: true, assignedTo: true, closedBy: true, comments: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true
+                  }
+              }  
+            }
           }
+        }
+      }
         );
         return res.status(200).json({
             ticket
@@ -472,6 +494,29 @@ const getTicketViaID = async (req, res) => {
         res.status(500).json({
             message: "Error fetching tickets"
         });
+    }
+};
+
+const deleteCommentViaID = async (req, res) => {
+    const commentID = req.params.id;
+    const validationResult = validation.validateID(commentID);
+    if (!validationResult.isValid) {
+      return res.status(400).json({ message: validationResult.message });
+    }
+    try {
+      const comment = await prisma.comment.findUnique({
+        where: { id: commentID }
+      });
+      if (!comment) {
+        return res.status(404).json({ message: "Comment not found" });
+      }
+      await prisma.comment.delete({
+        where: { id: commentID }
+      });
+      res.status(200).json({ message: "Comment deleted successfully" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error" });
     }
 };
 module.exports = {
@@ -488,6 +533,7 @@ module.exports = {
     deleteTicketViaID,
     reAssignTicket,
     getAllTicketsToID,
-    getTicketViaID
+    getTicketViaID,
+    deleteCommentViaID
     //getTicketID
 };
