@@ -39,17 +39,17 @@ router.patch("/:ticketID/reassign", routeMiddleware, authorized("admin"), reAssi
 router.get("/assignedtickets/", routeMiddleware, authorized("admin", "staff"), getAllTicketsByAgent);
 
 //get all tickets assigned to an agent with the status that is passed as a query parameter (ex: /statustickets?agentID=12345&status=claimed)
-router.get("/statustickets/", routeMiddleware, authorized("admin", "staff"), getAllTicketsByStatus);
+router.get("/statustickets", routeMiddleware, authorized("admin", "staff"), getAllTicketsByStatus);
 
 //get all tickets that are older than 14 days and still open - this is for any staff to see and handle tickets. 
-router.get("/oldtickets/", routeMiddleware, authorized("admin", "staff"), getOldTickets);
+router.get("/oldtickets", routeMiddleware, authorized("admin", "staff"), getOldTickets);
 
 // this route is for upadting the satus, however, it may not be used since we already have a route for closing the ticket, and the status can be updated to closed when the ticket is closed, so this route may not be necessary, but it can be used for updating the status to open if needed
 
 router.patch("/:id/reopen", routeMiddleware, authorized("admin", "staff"), reopenTicket);
 
 //get title for a ticket to display in the dashboard via id query parameter (ex: /gettickettitle?ticketID=12345)
-router.get("/gettickettitle/", routeMiddleware, authorized("admin", "staff"), getTicketTitle);
+router.get("/gettickettitle", routeMiddleware, authorized("admin", "staff"), getTicketTitle);
 
 //filter by status category - it will be a query parameter, for example, /tickets?status=open will return all open tickets, /tickets?status=closed will return all closed tickets, etc
 router.get("/filter", routeMiddleware, authorized("admin", "staff"), filterTicketsByStatus);
