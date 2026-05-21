@@ -46,7 +46,7 @@ router.get("/oldtickets/", routeMiddleware, authorized("admin", "staff"), getOld
 
 // this route is for upadting the satus, however, it may not be used since we already have a route for closing the ticket, and the status can be updated to closed when the ticket is closed, so this route may not be necessary, but it can be used for updating the status to open if needed
 
-router.patch("/:id/status", routeMiddleware, authorized("admin", "staff"), reopenTicket);
+router.patch("/:id/reopen", routeMiddleware, authorized("admin", "staff"), reopenTicket);
 
 //get title for a ticket to display in the dashboard via id query parameter (ex: /gettickettitle?ticketID=12345)
 router.get("/gettickettitle/", routeMiddleware, authorized("admin", "staff"), getTicketTitle);
