@@ -34,7 +34,24 @@ const changeUserStatus = async (req, res) => {
     }
 };
 
-
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await prisma.user.findMany({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true
+            }
+        });
+        return res.status(200).json({ users });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error getting users",
+            error: error.message
+        });
+    }
+};
 //only admins or the users themselves can delete an account
 const deleteUserViaID = async (req, res) => {
     const targetUserId = req.params.id;
@@ -118,5 +135,6 @@ module.exports = {
   deleteUserViaID,
   changeUserRole,
   changeUserStatus,
-  getUserName
+  getUserName,
+getAllUsers
 };

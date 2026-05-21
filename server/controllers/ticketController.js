@@ -6,10 +6,20 @@ const validation = require("../utils/validationUtils.js");
 // display all tickets - only for staff and managers since users should only se thier own tickets
 const getAllTickets = async (req, res) => {
     try {
-        const tickets = await prisma.ticket.findMany();
+        const tickets = await prisma.ticket.findMany({
+            include: {
+                assignedTo: {
+                    select: { id: true, name: true, email: true }
+                },
+                createdBy: {
+                    select: { id: true, name: true }
+                }
+            }
+        });
         res.status(200).json({
             tickets
         });
+        console.log(tickets);
     } catch (error) {
         res.status(500).json({
             message: "Error fetching tickets"
@@ -315,33 +325,44 @@ const getOldTickets = async (req, res) => {
   }
 };
 
-//const updateStatus = async(req, res) => {
-//   const  { ticketID, statusChange }  = req.body;
-//   const validationResult = validation.validateUpdateStatus(ticketID, statusChange);
-//   if (!validationResult.isValid) {
-//     return res.status(400).json({
-//       message: validationResult.message
-//     });
-//   }
-//   let j = -1;
-//   for(let i = 0; i < tickets.length; i++) {
-//     if(tickets[i].id === ticketID) {
-//       tickets[i].status = req.body.statusChange;
-//       j = i;
-//       break;
-//     }
-//   }
-//   if(j === -1) {
-//     return res.status(404).json({
-//       message: "Ticket not found, please try again with a valid ticket ID"
-//     });
-//   }
-//   res.status(200).json({
-//     message: "Ticket updated",
-//     ticket: tickets[j]
-//   });
-// };
+const reopenTicket = async (req, res) => {
+  const ticketID = req.params.id;
+  console.log("Reopen ticket called with ID:", ticketID);
+  const validationResult = validation.validateID(ticketID);
+  if (!validationResult.isValid) {
+    return res.status(400).json({ message: validationResult.message });
+  }
 
+  try {
+    const ticket = await prisma.ticket.findUnique({
+      where: { id: ticketID }
+    });
+
+    if (!ticket) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    if (ticket.status !== "closed") {
+      return res.status(400).json({ message: "Ticket is not closed" });
+    }
+
+    const updated = await prisma.ticket.update({
+      where: { id: ticketID },
+      data: {
+        status: "open",
+        closeDate: null,
+        closedById: null,
+        assignedToId: null
+      }
+    });
+
+    res.status(200).json({ message: "Ticket reopened successfully", ticket: updated });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 const getTicketTitle = async (req, res) => {
   const ticketID = req.query.ticketID;
 
@@ -534,6 +555,6 @@ module.exports = {
     reAssignTicket,
     getAllTicketsToID,
     getTicketViaID,
-    deleteCommentViaID
-    //getTicketID
+    deleteCommentViaID,
+    reopenTicket
 };

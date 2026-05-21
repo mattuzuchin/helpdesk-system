@@ -7,7 +7,7 @@ const {
   changeUserRole,
   changeUserStatus,
   getUserName,
-  getTicketViaID
+  getAllUsers
 } = require("../controllers/userController");
 const authorizeRoles = require("../middleware/authorizeUser.js");
 //const { getTicketViaID } = require("../controllers/ticketController.js");
@@ -19,5 +19,5 @@ router.patch("/:id/changerole", routeMiddleware, authorized("admin"),changeUserR
 router.patch("/:id/changeuserstatus", routeMiddleware, authorized("admin", "staff", "user"),changeUserStatus);
 
 router.get("/:id/getName", routeMiddleware, authorized("admin", "staff", "user"), getUserName);
-
+router.get("/getAllUsers", routeMiddleware, authorized("admin"), getAllUsers);
 module.exports = router;

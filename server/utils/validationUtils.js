@@ -89,7 +89,7 @@ const validateStatus = (status) => {
 };
 const validateLink = (link) => {
     try {
-        new URL(url);
+        new URL(link);
         return true;
     } catch {
         return false;

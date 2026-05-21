@@ -17,8 +17,8 @@ const {
   reAssignTicket,
   getAllTicketsToID,
   getTicketViaID,
-  deleteCommentViaID
-  //updateStatus
+  deleteCommentViaID,
+  reopenTicket
 } = require("../controllers/ticketController");
 
 //all routes is protected by routeMiddleWare which checks for authentication - will alter add authorization later when we have roles implemented, for example, only staff can create a ticket, only managers can close a ticket, etc. but for now, all routes are protected and can be accessed by any authenticated user.
@@ -46,7 +46,7 @@ router.get("/oldtickets/", routeMiddleware, authorized("admin", "staff"), getOld
 
 // this route is for upadting the satus, however, it may not be used since we already have a route for closing the ticket, and the status can be updated to closed when the ticket is closed, so this route may not be necessary, but it can be used for updating the status to open if needed
 
-// router.put("/updateStatus", updateStatus);
+router.patch("/:id/reopen", routeMiddleware, authorized("admin", "staff"), reopenTicket);
 
 //get title for a ticket to display in the dashboard via id query parameter (ex: /gettickettitle?ticketID=12345)
 router.get("/gettickettitle/", routeMiddleware, authorized("admin", "staff"), getTicketTitle);
