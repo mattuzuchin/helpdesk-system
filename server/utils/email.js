@@ -2,7 +2,7 @@ const { Resend } = require("resend");
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM_EMAIL = "Helpdesk <onboarding@resend.dev>";
+const FROM_EMAIL = `onboarding@resend.dev`;
 
 const sendPasswordResetEmail = async (toEmail, resetToken) => {
     const resetLink = `https://helpdesk-frontend-sjje.vercel.app/resetPassword?token=${resetToken}`;
