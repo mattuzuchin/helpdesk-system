@@ -25,4 +25,16 @@ const sendPasswordResetEmail = async (toEmail, resetToken) => {
     });
 };
 
-module.exports = { sendPasswordResetEmail };
+const sendLoginEmail = async (toEmail) => {
+    await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: toEmail,
+        subject: "New Login Detected",
+        html: `
+            <h2>New Login Detected</h2>
+            <p>A new login to your account was detected. If this was you, you can safely ignore this email.</p>
+        `
+    });
+};
+
+module.exports = { sendPasswordResetEmail, sendLoginEmail };

@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/jwt");
 const validation = require("../utils/validationUtils.js");
 const crypto = require("crypto");
-const { sendPasswordResetEmail } = require("../utils/email.js");
+const { sendPasswordResetEmail, sendLoginEmail } = require("../utils/email.js");
 const logOutUser = async (req, res) => {
     const userId = req.user.id;
     try {
@@ -248,6 +248,7 @@ const loginUser = async (req, res) => {
         }
         // generate token
         const token = generateToken(user);
+        await sendLoginEmail(email);
         return res.status(200).json({
             message: "Login successful",
             token: token,
