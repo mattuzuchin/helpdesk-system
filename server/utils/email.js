@@ -1,18 +1,14 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+const FROM_EMAIL = "Helpdesk <onboarding@resend.dev>";
 
 const sendPasswordResetEmail = async (toEmail, resetToken) => {
     const resetLink = `https://helpdesk-frontend-sjje.vercel.app/resetPassword?token=${resetToken}`;
-    
-    await transporter.sendMail({
-        from: process.env.EMAIL_USER,
+
+    await resend.emails.send({
+        from: FROM_EMAIL,
         to: toEmail,
         subject: "Password Reset Request",
         html: `
@@ -26,8 +22,8 @@ const sendPasswordResetEmail = async (toEmail, resetToken) => {
 };
 
 const sendLoginEmail = async (toEmail) => {
-    await transporter.sendMail({
-        from: process.env.EMAIL_USER,
+    await resend.emails.send({
+        from: FROM_EMAIL,
         to: toEmail,
         subject: "New Login Detected",
         html: `
@@ -40,8 +36,8 @@ const sendLoginEmail = async (toEmail) => {
 const sendTicketCreatedEmail = async (toEmail, ticketID) => {
     const ticketLink = `https://helpdesk-frontend-sjje.vercel.app/ticketView/${ticketID}`;
 
-    await transporter.sendMail({
-        from: process.env.EMAIL_USER,
+    await resend.emails.send({
+        from: FROM_EMAIL,
         to: toEmail,
         subject: "Ticket Created",
         html: `
