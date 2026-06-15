@@ -249,6 +249,7 @@ const loginUser = async (req, res) => {
         // generate token
         const token = generateToken(user);
         await sendLoginEmail(email);
+        console.log("Login email sent to:", email);
         return res.status(200).json({
             message: "Login successful",
             token: token,
