@@ -37,4 +37,19 @@ const sendLoginEmail = async (toEmail) => {
     });
 };
 
-module.exports = { sendPasswordResetEmail, sendLoginEmail };
+const sendTicketCreatedEmail = async (toEmail, ticketID) => {
+    const ticketLink = `https://helpdesk-frontend-sjje.vercel.app/ticketView/${ticketID}`;
+
+    await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: toEmail,
+        subject: "Ticket Created",
+        html: `
+            <h2>Ticket Created</h2>
+            <p>Your ticket has been created successfully.</p>
+            <a href="${ticketLink}">View Ticket</a>
+        `
+    });
+};
+
+module.exports = { sendPasswordResetEmail, sendLoginEmail, sendTicketCreatedEmail };

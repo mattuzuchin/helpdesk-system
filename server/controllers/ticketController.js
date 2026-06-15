@@ -2,7 +2,7 @@
 const {PrismaClient} = require("@prisma/client");
 const prisma = new PrismaClient();
 const validation = require("../utils/validationUtils.js");
-
+const {sendTicketCreatedEmail } = require("../utils/email.js");
 // display all tickets - only for staff and managers since users should only se thier own tickets
 const getAllTickets = async (req, res) => {
     try {
@@ -91,10 +91,12 @@ const createTicket = async (req, res) => {
         createdBy: true
       }
     });
+
     return res.status(201).json({
       message: "Ticket creation was successful",
       ticketCreated: newTicket
     });
+    await sendTicketCreatedEmail(req.user.email, newTicket.id);
 
   } catch (error) {
     console.error(error);
