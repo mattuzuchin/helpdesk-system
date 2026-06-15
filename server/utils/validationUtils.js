@@ -14,26 +14,17 @@ const isNumberProvided = (num) => {
     return num !== undefined && num !== null;
 } 
 const isValidPassword = (password) => {
-    if (password.length < 15) {
+    if (password.length < 8) {
         return false;
     }
+
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
     // eslint-disable-next-line no-useless-escape
-    const testSpecial = /^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/;
-    let sum = 0;
-    let isNum = false;
-    let hasSpecialChar = false;
-    for (const char of password) {
-        if (
-            isNumberProvided(parseInt(char)) &&
-            !isNaN(parseInt(char))
-        ) {
-            sum = parseInt(char) + sum;
-            isNum = true;
-        } else if (testSpecial.test(char)) {
-            hasSpecialChar = true;
-        }
-    }
-    return isNum && hasSpecialChar && sum === 20;
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+
+    return hasUppercase && hasLowercase && hasNumber && hasSpecialChar;
 };
 const validateAssignTicket = (ticketID, agentID) => {
   if (!ticketID || !agentID || typeof ticketID !== "string" || typeof agentID !== "string") {
@@ -44,7 +35,6 @@ const validateAssignTicket = (ticketID, agentID) => {
   }
   return { isValid: true };
 };
-
 const validateUpdateStatus = (ticketID, statusChange) => {
   if (!ticketID || typeof ticketID !== "string" || !statusChange || typeof statusChange !== "string" || !["open", "closed"].includes(statusChange.toLowerCase())) {
     return {
