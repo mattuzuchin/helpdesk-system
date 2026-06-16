@@ -92,7 +92,7 @@ const createTicket = async (req, res) => {
       }
     });
     await sendTicketCreatedEmail(req.user.email, newTicket.id);
-    console.log("Email sent successfully");
+    console.log("Email sent successfully: " + req.user.email + " for ticket ID: " + newTicket.id);
     return res.status(201).json({
       message: "Ticket creation was successful",
       ticketCreated: newTicket
